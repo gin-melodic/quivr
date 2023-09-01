@@ -5,6 +5,7 @@
     "people": "Pessoas",
     "knowledge": "Conhecimento",
     "modelSection": "Configuração do modelo",
+    "brainTypeLabel": "Brain type",
     "openAiKeyLabel": "Chave Open AI",
     "openAiKeyPlaceholder": "sk-xxx",
     "modelLabel": "Modelo",

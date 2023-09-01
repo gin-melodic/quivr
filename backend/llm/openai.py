@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from logger import get_logger
 
 from llm.qa_base import QABaseBrainPicking
@@ -27,6 +27,7 @@ class OpenAIBrainPicking(QABaseBrainPicking):
         max_tokens: int,
         user_openai_api_key: str,
         prompt_id: Optional[UUID],
+        api_base: str,
         streaming: bool = False,
     ) -> "OpenAIBrainPicking":  # pyright: ignore reportPrivateUsage=none
         """
@@ -42,10 +43,9 @@ class OpenAIBrainPicking(QABaseBrainPicking):
             user_openai_api_key=user_openai_api_key,
             streaming=streaming,
             prompt_id=prompt_id,
+            api_base=api_base,
         )
 
     @property
-    def embeddings(self) -> OpenAIEmbeddings:
-        return OpenAIEmbeddings(
-            openai_api_key=self.openai_api_key
-        )  # pyright: ignore reportPrivateUsage=none
+    def embeddings(self) -> HuggingFaceEmbeddings:
+        return HuggingFaceEmbeddings(model_name='/code/text2vec-large-chinese')

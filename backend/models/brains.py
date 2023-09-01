@@ -24,6 +24,9 @@ class Brain(BaseModel):
     files: List[Any] = []
     max_brain_size = BrainRateLimiting().max_brain_size
     prompt_id: Optional[UUID] = None
+    type: Optional[str] = "openai"
+    url: Optional[str] = None
+    top_p: Optional[float] = 0.0
 
     class Config:
         arbitrary_types_allowed = True

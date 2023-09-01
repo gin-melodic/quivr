@@ -260,7 +260,11 @@ async def create_stream_question_handler(
     if not current_user.openai_api_key and brain_id:
         brain_details = get_brain_details(brain_id)
         if brain_details:
-            current_user.openai_api_key = brain_details.openai_api_key
+            if brain_details.type == 'openai':
+                current_user.openai_api_key = brain_details.openai_api_key
+            else:
+                # if not openai brain, use url
+                current_user.brain_url = brain_details.url
 
     if not current_user.openai_api_key:
         user_identity = get_user_identity(current_user.id)
@@ -276,6 +280,9 @@ async def create_stream_question_handler(
     ):
         # TODO: create ChatConfig class (pick config from brain or user or chat) and use it here
         chat_question.model = chat_question.model or brain.model or "gpt-3.5-turbo"
+        if brain_details and brain_details.type == 'chatglm2-6b':
+            chat_question.model = 'chatglm2-6b-32k'
+            chat_question.top_p = chat_question.top_p or brain.top_p or 0
         chat_question.temperature = chat_question.temperature or brain.temperature or 0
         chat_question.max_tokens = chat_question.max_tokens or brain.max_tokens or 256
 
@@ -284,22 +291,42 @@ async def create_stream_question_handler(
         check_user_requests_limit(current_user)
         gpt_answer_generator: HeadlessQA | OpenAIBrainPicking
         if brain_id:
-            gpt_answer_generator = OpenAIBrainPicking(
-                chat_id=str(chat_id),
-                model=(brain_details or chat_question).model
-                if current_user.openai_api_key
-                else "gpt-3.5-turbo",  # type: ignore
-                max_tokens=(brain_details or chat_question).max_tokens
-                if current_user.openai_api_key
-                else 0,  # type: ignore
-                temperature=(brain_details or chat_question).temperature
-                if current_user.openai_api_key
-                else 256,  # type: ignore
-                brain_id=str(brain_id),
-                user_openai_api_key=current_user.openai_api_key,  # pyright: ignore reportPrivateUsage=none
-                streaming=True,
-                prompt_id=chat_question.prompt_id,
-            )
+            if brain_details is not None and brain_details.type == 'chatglm2-6b':
+                gpt_answer_generator = OpenAIBrainPicking(
+                    chat_id=str(chat_id),
+                    model=(brain_details or chat_question).model
+                    if current_user.openai_api_key
+                    else "gpt-3.5-turbo",  # type: ignore
+                    max_tokens=(brain_details or chat_question).max_tokens
+                    if current_user.openai_api_key
+                    else 0,  # type: ignore
+                    temperature=(brain_details or chat_question).temperature
+                    if current_user.openai_api_key
+                    else 256,  # type: ignore
+                    brain_id=str(brain_id),
+                    user_openai_api_key=current_user.openai_api_key if current_user.brain_url else None,  # pyright: ignore reportPrivateUsage=none
+                    api_base=current_user.brain_url,
+                    streaming=True,
+                    prompt_id=chat_question.prompt_id,
+                )
+            else:
+                gpt_answer_generator = OpenAIBrainPicking(
+                    chat_id=str(chat_id),
+                    model=(brain_details or chat_question).model
+                    if current_user.openai_api_key
+                    else "gpt-3.5-turbo",  # type: ignore
+                    max_tokens=(brain_details or chat_question).max_tokens
+                    if current_user.openai_api_key
+                    else 0,  # type: ignore
+                    temperature=(brain_details or chat_question).temperature
+                    if current_user.openai_api_key
+                    else 256,  # type: ignore
+                    brain_id=str(brain_id),
+                    user_openai_api_key=current_user.openai_api_key,  # pyright: ignore reportPrivateUsage=none
+                    streaming=True,
+                    prompt_id=chat_question.prompt_id,
+                    api_base=current_user.brain_url
+                )
         else:
             gpt_answer_generator = HeadlessQA(
                 model=chat_question.model

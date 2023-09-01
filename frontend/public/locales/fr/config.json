@@ -5,6 +5,7 @@
   "backendSection": "Configuration du backend",
   "backendUrlLabel": "URL du backend",
   "backendUrlPlaceHolder": "URL du backend",
+  "brainTypeLabel": "Brain type",
   "brainUpdated": "Cerveau mis à jour avec succès",
   "configReset": "Configuration réinitialisée",
   "configSaved": "Configuration sauvegardée",

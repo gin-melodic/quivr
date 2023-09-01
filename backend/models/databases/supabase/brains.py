@@ -18,6 +18,9 @@ class CreateBrainProperties(BaseModel):
     max_tokens: Optional[int] = 256
     openai_api_key: Optional[str] = None
     prompt_id: Optional[UUID] = None
+    type: Optional[str] = "openai"
+    url: Optional[str] = None
+    top_p: Optional[float] = 0.0
 
     def dict(self, *args, **kwargs):
         brain_dict = super().dict(*args, **kwargs)
@@ -35,6 +38,9 @@ class BrainUpdatableProperties(BaseModel):
     openai_api_key: Optional[str]
     status: Optional[str]
     prompt_id: Optional[UUID]
+    type: Optional[str]
+    url: Optional[str]
+    top_p: Optional[float]
 
     def dict(self, *args, **kwargs):
         brain_dict = super().dict(*args, **kwargs)

@@ -1,6 +1,10 @@
-import { Model, PaidModels } from "../context/BrainConfigProvider/types";
+import {BrainType, Model, PaidModels} from "../context/BrainConfigProvider/types";
 
-export const defineMaxTokens = (model: Model | PaidModels): number => {
+export const defineMaxTokens = (model: Model | PaidModels, brainType: BrainType = 'openai'): number => {
+  if (brainType === "chatglm2-6b") {
+    return 8192;
+  }
+
   //At the moment is evaluating only models from OpenAI
   switch (model) {
     case "gpt-3.5-turbo":
@@ -13,3 +17,11 @@ export const defineMaxTokens = (model: Model | PaidModels): number => {
       return 250;
   }
 };
+
+export const defineDefaultMaxTokens = (model: Model | PaidModels, brainType: BrainType = 'openai'): number => {
+  if (brainType === 'chatglm2-6b') {
+    return 8192;
+  }
+
+  return defineMaxTokens(model, brainType);
+}

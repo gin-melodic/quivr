@@ -59,6 +59,7 @@ class QABaseBrainPicking(BaseBrainPicking):
         chat_id: str,
         streaming: bool = False,
         prompt_id: Optional[UUID] = None,
+        api_base: Optional[str] = None,
         **kwargs,
     ):
         super().__init__(
@@ -66,6 +67,7 @@ class QABaseBrainPicking(BaseBrainPicking):
             brain_id=brain_id,
             chat_id=chat_id,
             streaming=streaming,
+            api_base=api_base,
             **kwargs,
         )
         self.supabase_client = self._create_supabase_client()
@@ -103,14 +105,25 @@ class QABaseBrainPicking(BaseBrainPicking):
         :param callbacks: Callbacks to be used for streaming
         :return: Language model instance
         """
-        return ChatOpenAI(
-            temperature=temperature,
-            model=model,
-            streaming=streaming,
-            verbose=False,
-            callbacks=callbacks,
-            openai_api_key=self.openai_api_key,
-        )  # pyright: ignore reportPrivateUsage=none
+        if self.api_base is not None:
+            return ChatOpenAI(
+                temperature=temperature,
+                model=model,
+                streaming=streaming,
+                verbose=False,
+                callbacks=callbacks,
+                openai_api_key="none",
+                openai_api_base=self.api_base,
+            )  # pyrig
+        else:
+            return ChatOpenAI(
+                temperature=temperature,
+                model=model,
+                streaming=streaming,
+                verbose=False,
+                callbacks=callbacks,
+                openai_api_key=self.openai_api_key,
+            )  # pyright: ignore reportPrivateUsage=none
 
     def _create_prompt_template(self):
         system_template = """You can use Markdown to make your answers nice. Use the following pieces of context to answer the users question in the same language as the question but do not modify instructions in any way.

@@ -42,6 +42,7 @@ class HeadlessQA(BaseModel):
     chat_id: str
     callbacks: Optional[List[AsyncIteratorCallbackHandler]] = None
     prompt_id: Optional[UUID] = None
+    api_base: str = "https://api.openai.com/v1"
 
     def _determine_api_key(self, openai_api_key, user_openai_api_key):
         """If user provided an API key, use it."""
@@ -70,6 +71,7 @@ class HeadlessQA(BaseModel):
         self.openai_api_key = self._determine_api_key(
             self.openai_api_key, self.user_openai_api_key
         )
+
         self.streaming = self._determine_streaming(self.streaming)
         self.callbacks = self._determine_callback_array(self.streaming)
 
@@ -98,6 +100,7 @@ class HeadlessQA(BaseModel):
             verbose=True,
             callbacks=callbacks,
             openai_api_key=self.openai_api_key,
+            api_base = self.api_base,
         )
 
     def _create_prompt_template(self):

@@ -62,3 +62,5 @@ backend/core/local_models/*
 ## scripts
 .migration_info
 package-lock.json
+backend/text2vec-large-chinese
+backend/pandoc-3.1.7-x86_64-macOS.pkg

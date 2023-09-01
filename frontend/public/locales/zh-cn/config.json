@@ -5,6 +5,7 @@
     "people": "成员",
     "knowledge": "知识",
     "modelSection": "模型配置",
+    "brainTypeLabel": "Brain type",
     "openAiKeyLabel": "Open AI Key",
     "openAiKeyPlaceholder": "sk-xxx",
     "modelLabel": "模型",

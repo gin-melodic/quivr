@@ -11,6 +11,7 @@ import { Divider } from "@/lib/components/ui/Divider";
 import Field from "@/lib/components/ui/Field";
 import { TextArea } from "@/lib/components/ui/TextArea";
 import {
+  brainTypes,
   freeModels,
   paidModels,
 } from "@/lib/context/BrainConfigProvider/types";
@@ -41,6 +42,8 @@ export const SettingsTab = ({ brainId }: SettingsTabProps): JSX.Element => {
     promptId,
     pickPublicPrompt,
     removeBrainPrompt,
+    brainType,
+    topP,
   } = useSettingsTab({ brainId });
 
   return (
@@ -87,34 +90,85 @@ export const SettingsTab = ({ brainId }: SettingsTabProps): JSX.Element => {
         {...register("description")}
       />
       <Divider text={t("modelSection", { ns: "config" })} />
-      <Field
-        label={t("openAiKeyLabel", { ns: "config" })}
-        placeholder={t("openAiKeyPlaceholder", { ns: "config" })}
-        autoComplete="off"
-        className="flex-1"
-        {...register("openAiKey")}
-      />
+
       <fieldset className="w-full flex flex-col mt-2">
-        <label className="flex-1 text-sm" htmlFor="model">
-          {t("modelLabel", { ns: "config" })}
+        <label className="flex-1 text-sm" htmlFor="brainType">
+            {t("brainTypeLabel", { ns: "config" })}
         </label>
         <select
-          id="model"
-          {...register("model")}
-          className="px-5 py-2 dark:bg-gray-700 bg-gray-200 rounded-md"
-          onChange={() => {
-            void handleSubmit(false); // Trigger form submission
-          }}
-        >
-          {(openAiKey !== undefined ? paidModels : freeModels).map(
-            (availableModel) => (
-              <option value={availableModel} key={availableModel}>
-                {availableModel}
+            id="model-type"
+            {...register("brainType")}
+            className="px-5 py-2 dark:bg-gray-700 bg-gray-200 rounded-md"
+          >
+            {brainTypes.map((availableBrainType) => (
+              <option value={availableBrainType} key={availableBrainType}>
+                {availableBrainType}
               </option>
             )
-          )}
-        </select>
+            )}
+          </select>
       </fieldset>
+
+      { brainType === 'openai' && (
+          <>
+            <Field
+              label={t("openAiKeyLabel", { ns: "config" })}
+              placeholder={t("openAiKeyPlaceholder", { ns: "config" })}
+              autoComplete="off"
+              className="flex-1"
+              {...register("openAiKey")}
+            />
+            <fieldset className="w-full flex flex-col mt-2">
+              <label className="flex-1 text-sm" htmlFor="model">
+                {t("modelLabel", { ns: "config" })}
+              </label>
+              <select
+                id="model"
+                {...register("model")}
+                className="px-5 py-2 dark:bg-gray-700 bg-gray-200 rounded-md"
+                onChange={() => {
+                  void handleSubmit(false); // Trigger form submission
+                }}
+              >
+                {(openAiKey !== undefined ? paidModels : freeModels).map(
+                  (availableModel) => (
+                    <option value={availableModel} key={availableModel}>
+                      {availableModel}
+                    </option>
+                  )
+                )}
+              </select>
+            </fieldset>
+          </>
+      ) }
+
+      { brainType === 'chatglm2-6b' && (
+          <>
+            <Field
+              label="ChatGLM2-6B Url"
+              placeholder="https://chatglm2-6b.brainshop.ai"
+              autoComplete="off"
+              className="flex-1"
+              {...register("brainUrl")}
+            />
+            <fieldset className="w-full flex mt-4">
+              <label className="flex-1" htmlFor="top_p">
+                  Top_P: { topP }
+              </label>
+              <input
+                  id="top_p"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={topP}
+                  {...register("topP")}
+              />
+            </fieldset>
+          </>
+      ) }
+
+
       <fieldset className="w-full flex mt-4">
         <label className="flex-1" htmlFor="temp">
           {t("temperature", { ns: "config" })}: {temperature}
@@ -136,7 +190,7 @@ export const SettingsTab = ({ brainId }: SettingsTabProps): JSX.Element => {
         <input
           type="range"
           min="10"
-          max={defineMaxTokens(model)}
+          max={defineMaxTokens(model, brainType)}
           value={maxTokens}
           {...register("maxTokens")}
         />

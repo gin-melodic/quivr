@@ -23,3 +23,4 @@ class ChatQuestion(BaseModel):
     max_tokens: Optional[int]
     brain_id: Optional[UUID]
     prompt_id: Optional[UUID]
+    top_p: Optional[float]

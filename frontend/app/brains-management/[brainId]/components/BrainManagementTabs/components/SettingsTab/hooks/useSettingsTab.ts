@@ -60,6 +60,8 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
   const model = watch("model");
   const temperature = watch("temperature");
   const maxTokens = watch("maxTokens");
+  const brainType = watch("brainType");
+  const topP = watch("topP");
 
   const fetchBrain = async () => {
     const brain = await getBrain(brainId);
@@ -103,7 +105,7 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
   }, []);
 
   useEffect(() => {
-    setValue("maxTokens", Math.min(maxTokens, defineMaxTokens(model)));
+    setValue("maxTokens", Math.min(maxTokens, defineMaxTokens(model, brainType)));
   }, [maxTokens, model, setValue]);
 
   useEffect(() => {
@@ -226,6 +228,7 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
         maxTokens: max_tokens,
         openAiKey: openai_api_key,
         prompt,
+        brainUrl,
         ...otherConfigs
       } = getValues();
 
@@ -253,6 +256,9 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
             ...otherConfigs,
             max_tokens,
             openai_api_key,
+            type: brainType,
+            url: brainUrl,
+            top_p: topP,
           });
           void fetchBrain();
         } else {
@@ -261,6 +267,9 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
               ...otherConfigs,
               max_tokens,
               openai_api_key,
+              type: brainType,
+              url: brainUrl,
+              top_p: topP,
             }),
             promptHandler(),
           ]);
@@ -270,6 +279,9 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
           ...otherConfigs,
           max_tokens,
           openai_api_key,
+          type: brainType,
+          url: brainUrl,
+          top_p: topP,
           prompt_id:
             otherConfigs["prompt_id"] !== ""
               ? otherConfigs["prompt_id"]
@@ -335,5 +347,7 @@ export const useSettingsTab = ({ brainId }: UseSettingsTabProps) => {
     promptId,
     removeBrainPrompt,
     pickPublicPrompt,
+    brainType,
+    topP,
   };
 };

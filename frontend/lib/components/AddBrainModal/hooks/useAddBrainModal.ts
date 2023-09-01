@@ -38,12 +38,22 @@ export const useAddBrainModal = () => {
 
   const openAiKey = watch("openAiKey");
   const model = watch("model");
+  const brainType = watch("brainType");
+  const brainUrl = watch("brainUrl");
+  const topP = watch("topP");
   const temperature = watch("temperature");
   const maxTokens = watch("maxTokens");
 
   useEffect(() => {
-    setValue("maxTokens", Math.min(maxTokens, defineMaxTokens(model)));
-  }, [maxTokens, model, setValue]);
+    setValue("maxTokens", Math.min(maxTokens, defineMaxTokens(model, brainType)));
+  }, [maxTokens, model, setValue, brainType]);
+
+  useEffect(() => {
+    if (brainType === 'chatglm2-6b') {
+      setValue("temperature", 0.85)
+      setValue("topP", 0.8)
+    }
+  }, [setValue, brainType])
 
   const getCreatingBrainPromptId = async (): Promise<string | undefined> => {
     const { prompt } = getValues();
@@ -58,7 +68,7 @@ export const useAddBrainModal = () => {
   const handleSubmit = async () => {
     const { name, description, setDefault } = getValues();
 
-    if (name.trim() === "" || isPending) {
+    if (isPending || name.trim() === "") {
       return;
     }
 
@@ -75,6 +85,9 @@ export const useAddBrainModal = () => {
         openai_api_key: openAiKey,
         temperature,
         prompt_id,
+        type: brainType,
+        url: brainUrl,
+        top_p: topP,
       });
 
       if (createdBrainId === undefined) {
@@ -145,8 +158,11 @@ export const useAddBrainModal = () => {
     setIsShareModalOpen,
     handleSubmit,
     register,
+    brainType,
+    brainUrl,
     openAiKey: openAiKey === "" ? undefined : openAiKey,
     model,
+    topP,
     temperature,
     maxTokens,
     isPending,

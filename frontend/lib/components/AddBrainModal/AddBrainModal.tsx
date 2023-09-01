@@ -8,6 +8,7 @@ import Button from "@/lib/components/ui/Button";
 import Field from "@/lib/components/ui/Field";
 import { Modal } from "@/lib/components/ui/Modal";
 import {
+  brainTypes,
   freeModels,
   paidModels,
 } from "@/lib/context/BrainConfigProvider/types";
@@ -24,7 +25,9 @@ export const AddBrainModal = (): JSX.Element => {
     isShareModalOpen,
     setIsShareModalOpen,
     register,
+    brainType,
     openAiKey,
+    topP,
     temperature,
     maxTokens,
     model,
@@ -74,32 +77,85 @@ export const AddBrainModal = (): JSX.Element => {
           {...register("description")}
         />
 
-        <Field
-          label={t("openAiKeyLabel", { ns: "config" })}
-          placeholder={t("openAiKeyPlaceholder", { ns: "config" })}
-          autoComplete="off"
-          className="flex-1"
-          {...register("openAiKey")}
-        />
-
         <fieldset className="w-full flex flex-col">
-          <label className="flex-1 text-sm" htmlFor="model">
-            {t("modelLabel", { ns: "config" })}
+          <label className="flex-1 text-sm" htmlFor="brainType">
+            {t("brainTypeLabel", { ns: "config" })}
           </label>
           <select
-            id="model"
-            {...register("model")}
+            id="model-type"
+            {...register("brainType")}
             className="px-5 py-2 dark:bg-gray-700 bg-gray-200 rounded-md"
           >
-            {(openAiKey !== undefined ? paidModels : freeModels).map(
-              (availableModel) => (
-                <option value={availableModel} key={availableModel}>
-                  {availableModel}
-                </option>
-              )
+            {brainTypes.map((availableBrainType) => (
+              <option value={availableBrainType} key={availableBrainType}>
+                {availableBrainType}
+              </option>
+            )
             )}
           </select>
         </fieldset>
+
+        {brainType === 'openai' && (
+           <>
+            <Field
+                  label={t("openAiKeyLabel", { ns: "config" })}
+                  placeholder={t("openAiKeyPlaceholder", { ns: "config" })}
+                  autoComplete="off"
+                  className="flex-1"
+                  {...register("openAiKey")}
+                />
+
+                <fieldset className="w-full flex flex-col">
+                  <label className="flex-1 text-sm" htmlFor="model">
+                    {t("modelLabel", { ns: "config" })}
+                  </label>
+                  <select
+                    id="model"
+                    {...register("model")}
+                    className="px-5 py-2 dark:bg-gray-700 bg-gray-200 rounded-md"
+                  >
+                    {(openAiKey !== undefined ? paidModels : freeModels).map(
+                      (availableModel) => (
+                        <option value={availableModel} key={availableModel}>
+                          {availableModel}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </fieldset>
+           </>
+        )}
+
+        {brainType === 'chatglm2-6b' && (
+            <>
+              {/* ChatGLM2-6B Url */}
+              <Field
+                label="ChatGLM2-6B Url"
+                placeholder="https://chatglm2-6b.brainshop.ai"
+                autoComplete="off"
+                className="flex-1"
+                {...register("brainUrl")}
+              />
+
+              {/* top_p */}
+              <fieldset className="w-full flex mt-4">
+                <label className="flex-1" htmlFor="top_p">
+                    Top_P: { topP }
+                </label>
+                <input
+                    id="top_p"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={topP}
+                    {...register("topP")}
+                />
+              </fieldset>
+            </>
+        )}
+
+
 
         <fieldset className="w-full flex mt-4">
           <label className="flex-1" htmlFor="temp">
@@ -122,7 +178,7 @@ export const AddBrainModal = (): JSX.Element => {
           <input
             type="range"
             min="10"
-            max={defineMaxTokens(model)}
+            max={defineMaxTokens(model, brainType)}
             value={maxTokens}
             {...register("maxTokens")}
           />

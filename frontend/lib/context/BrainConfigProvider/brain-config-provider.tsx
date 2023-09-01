@@ -25,6 +25,9 @@ const defaultBrainConfig: BrainConfig = {
   supabaseKey: undefined,
   supabaseUrl: undefined,
   prompt_id: undefined,
+  brainType: "openai",
+  brainUrl: undefined,
+  topP: 0,
 };
 
 export const BrainConfigProvider = ({

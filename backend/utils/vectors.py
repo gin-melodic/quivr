@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import List
 from uuid import UUID
 
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from pydantic import BaseModel
 from logger import get_logger
 from models.settings import get_documents_vector_store, get_embeddings, get_supabase_db
@@ -16,9 +16,7 @@ class Neurons(BaseModel):
         logger.info("Creating vector for document")
         logger.info(f"Document: {doc}")
         if user_openai_api_key:
-            documents_vector_store._embedding = OpenAIEmbeddings(
-                openai_api_key=user_openai_api_key
-            )  # pyright: ignore reportPrivateUsage=none
+            documents_vector_store._embedding = HuggingFaceEmbeddings(model_name='/code/text2vec-large-chinese')
         try:
             sids = documents_vector_store.add_documents([doc])
             if sids and len(sids) > 0:

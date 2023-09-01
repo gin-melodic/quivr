@@ -23,6 +23,7 @@
   "newAPIKey": "Crea una nueva clave",
   "noUser": "Sin usuarios",
   "ohno": "¡Oh no!",
+  "brainTypeLabel": "Brain type",
   "openAiKeyLabel": "Clave de Open AI",
   "openAiKeyPlaceholder": "sk-xxx",
   "people": "Personas",

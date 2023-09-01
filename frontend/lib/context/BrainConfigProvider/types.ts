@@ -2,11 +2,14 @@ import { UUID } from "crypto";
 
 export type BrainConfig = {
   model: Model;
+  topP: number;
   temperature: number;
   maxTokens: number;
   keepLocal: boolean;
   backendUrl?: string;
+  brainType?: BrainType;
   openAiKey?: string;
+  brainUrl?: string;
   anthropicKey?: string;
   supabaseUrl?: string;
   supabaseKey?: string;
@@ -20,6 +23,8 @@ export type BrainConfigContextType = {
   updateConfig: (config: OptionalConfig) => void;
   resetConfig: () => void;
 };
+
+export const brainTypes = ["openai", "chatglm2-6b"] as const;
 
 export const openAiFreeModels = ["gpt-3.5-turbo", "gpt-3.5-turbo-16k"] as const;
 
@@ -48,3 +53,5 @@ export const paidModels = [...openAiPaidModels] as const;
 export type PaidModels = (typeof paidModels)[number];
 
 export type Model = (typeof freeModels)[number];
+
+export type BrainType = (typeof brainTypes)[number];

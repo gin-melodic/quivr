@@ -30,6 +30,7 @@ class BaseBrainPicking(BaseModel):
     streaming: bool = False
 
     openai_api_key: str = None  # pyright: ignore reportPrivateUsage=none
+    api_base: str = None # pyright: ignore reportPrivateUsage=none
     callbacks: List[
         AsyncIteratorCallbackHandler
     ] = None  # pyright: ignore reportPrivateUsage=none

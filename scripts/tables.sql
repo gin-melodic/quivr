@@ -25,17 +25,17 @@ CREATE TABLE IF NOT EXISTS vectors (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     content TEXT,
     metadata JSONB,
-    embedding VECTOR(1536)
+    embedding VECTOR(1024)
 );
 
 -- Create function to match vectors
-CREATE OR REPLACE FUNCTION match_vectors(query_embedding VECTOR(1536), match_count INT, p_brain_id UUID)
+CREATE OR REPLACE FUNCTION match_vectors(query_embedding VECTOR(1024), match_count INT, p_brain_id UUID)
 RETURNS TABLE(
     id UUID,
     brain_id UUID,
     content TEXT,
     metadata JSONB,
-    embedding VECTOR(1536),
+    embedding VECTOR(1024),
     similarity FLOAT
 ) LANGUAGE plpgsql AS $$
 #variable_conflict use_column
@@ -75,17 +75,17 @@ CREATE TABLE IF NOT EXISTS summaries (
     document_id UUID REFERENCES vectors(id),
     content TEXT,
     metadata JSONB,
-    embedding VECTOR(1536)
+    embedding VECTOR(1024)
 );
 
 -- Create function to match summaries
-CREATE OR REPLACE FUNCTION match_summaries(query_embedding VECTOR(1536), match_count INT, match_threshold FLOAT)
+CREATE OR REPLACE FUNCTION match_summaries(query_embedding VECTOR(1024), match_count INT, match_threshold FLOAT)
 RETURNS TABLE(
     id BIGINT,
     document_id UUID,
     content TEXT,
     metadata JSONB,
-    embedding VECTOR(1536),
+    embedding VECTOR(1024),
     similarity FLOAT
 ) LANGUAGE plpgsql AS $$
 #variable_conflict use_column
@@ -135,7 +135,10 @@ CREATE TABLE IF NOT EXISTS brains (
   max_tokens INT,
   temperature FLOAT,
   openai_api_key TEXT,
-  prompt_id UUID REFERENCES prompts(id)
+  prompt_id UUID REFERENCES prompts(id),
+  type TEXT,
+  url TEXT,
+  top_p FLOAT
 );
 
 
@@ -215,8 +218,8 @@ CREATE TABLE IF NOT EXISTS migrations (
 );
 
 INSERT INTO migrations (name) 
-SELECT '202308217004800_add_public_prompts_examples'
+SELECT '202308311122370_brain_support_other_type'
 WHERE NOT EXISTS (
-    SELECT 1 FROM migrations WHERE name = '202308217004800_add_public_prompts_examples'
+    SELECT 1 FROM migrations WHERE name = '202308311122370_brain_support_other_type'
 );
 

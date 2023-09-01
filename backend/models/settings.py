@@ -1,4 +1,4 @@
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from models.databases.supabase.supabase import SupabaseDB
 from pydantic import BaseSettings
 from supabase.client import Client, create_client
@@ -38,11 +38,9 @@ def get_supabase_db() -> SupabaseDB:
     return SupabaseDB(supabase_client)
 
 
-def get_embeddings() -> OpenAIEmbeddings:
+def get_embeddings() -> HuggingFaceEmbeddings:
     settings = BrainSettings()  # pyright: ignore reportPrivateUsage=none
-    embeddings = OpenAIEmbeddings(
-        openai_api_key=settings.openai_api_key
-    )  # pyright: ignore reportPrivateUsage=none
+    embeddings = HuggingFaceEmbeddings(model_name='/code/text2vec-large-chinese')
     return embeddings
 
 
